@@ -1,4 +1,4 @@
-# E-commerce Product API
+# E-commerce APP
 
 ## Project Overview
 This project is a **Backend E-commerce Product API** built with **Django** and **Django REST Framework (DRF)**.  
