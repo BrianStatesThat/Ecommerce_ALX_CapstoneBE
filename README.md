@@ -54,21 +54,88 @@ It simulates real-world backend development responsibilities, focusing on **prod
   - **Users**
 - Products are associated with categories (e.g., Electronics, Clothing).
 
-### Authentication
-- User authentication implemented using **Django’s built-in authentication system**.
-- Only authenticated users can perform product CRUD operations.
-- (Optional) JWT authentication can be added for additional security.
+# E-commerce Product API Endpoints
 
-### API Design
-- Built with **Django REST Framework (DRF)**.
-- Follows **RESTful principles**:
-  - `GET` for retrieving data
-  - `POST` for creating resources
-  - `PUT`/`PATCH` for updating
-  - `DELETE` for deleting
-- Proper error handling with **HTTP status codes**:
-  - `404` for not found
-  - `400` for bad requests
+This API is built using Django and Django REST Framework. It supports product and user management, authentication, search, filtering, and documentation.
+
+---
+
+##  Authentication
+
+- `POST /api/token/`  
+  Obtain JWT access and refresh tokens.
+
+- `POST /api/token/refresh/`  
+  Refresh access token using a valid refresh token.
+
+---
+
+## Users
+
+- `GET /api/users/`  
+  List all users.
+
+- `POST /api/users/`  
+  Register a new user.
+
+- `GET /api/users/{id}/`  
+  Retrieve user details.
+
+- `PUT /api/users/{id}/`  
+  Update user information.
+
+- `DELETE /api/users/{id}/`  
+  Delete a user.
+
+---
+
+##  Products (`mystore` app)
+
+- `GET /api/products/`  
+  List all products (supports pagination, search, and filtering).
+
+- `POST /api/products/`  
+  Create a new product (requires authentication).
+
+- `GET /api/products/{id}/`  
+  Retrieve details for a specific product.
+
+- `PUT /api/products/{id}/`  
+  Update a product (requires authentication).
+
+- `DELETE /api/products/{id}/`  
+  Delete a product (requires authentication).
+
+---
+
+##  Search & Filtering
+
+- `GET /api/products/?search=keyword`  
+  Search products by name or category (partial matches supported).
+
+- `GET /api/products/?category=1&min_price=50&max_price=200&in_stock=true`  
+  Filter products by category, price range, and stock availability.
+
+---
+
+##  Categories
+
+- `GET /api/categories/`  
+  List all categories.
+
+- `POST /api/categories/`  
+  Create a new category (requires authentication).
+
+- `GET /api/categories/{id}/`  
+  Retrieve category details.
+
+- `PUT /api/categories/{id}/`  
+  Update a category.
+
+- `DELETE /api/categories/{id}/`  
+  Delete a category.
+
+---
 
 ### Pagination & Filtering
 - Pagination added to product listings and search results.
