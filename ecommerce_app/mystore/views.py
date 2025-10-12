@@ -1,17 +1,52 @@
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, status
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from django_filters.rest_framework import DjangoFilterBackend
+
 from .models import Product, Category
 from .serializers import ProductSerializer, CategorySerializer
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from .filters import ProductFilter
+
 
 class ProductViewSet(viewsets.ModelViewSet):
+    """
+    Handles CRUD operations for products.
+    Only authenticated users can create, update, or delete products.
+    Supports search, filtering, and pagination.
+    """
     queryset = Product.objects.all().order_by('-created_date')
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     search_fields = ['name', 'category__name']
-    filterset_fields = ['category', 'price', 'stock_quantity']
+    filterset_class = ProductFilter
+
+    def create(self, request, *args, **kwargs):
+        """
+        Custom create method with explicit error handling.
+        """
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def update(self, request, *args, **kwargs):
+        """
+        Custom update method with validation feedback.
+        """
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        if not serializer.is_valid():
+            return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
+    """
+    Handles CRUD operations for product categories.
+    """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
