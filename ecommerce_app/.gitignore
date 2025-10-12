@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+
+# Django
+db.sqlite3
+/staticfiles/
+/media/
+/*.sqlite3
+
+# Environment
+.env
+*.env
+
+# VS Code
+.vscode/
+
+# Heroku
+*.sqlite3
+*.db
+*.log
+*.pot
+*.pyc
+*.pyo
+*.swp
+*.swo
+
+# OS-specific
+.DS_Store
+Thumbs.db
