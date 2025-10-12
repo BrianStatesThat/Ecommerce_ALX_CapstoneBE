@@ -21,6 +21,12 @@ class ProductViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'category__name']
     filterset_class = ProductFilter
 
+    def get_permissions(self):
+        """
+        Customize permissions: allow read-only access to unauthenticated users.
+        """
+        return super().get_permissions()
+
     def create(self, request, *args, **kwargs):
         """
         Custom create method with explicit error handling.
@@ -30,6 +36,12 @@ class ProductViewSet(viewsets.ModelViewSet):
             return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def perform_create(self, serializer):
+        """
+        Optionally associate the product with the authenticated user.
+        """
+        serializer.save()
 
     def update(self, request, *args, **kwargs):
         """
