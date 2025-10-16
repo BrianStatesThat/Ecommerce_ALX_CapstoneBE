@@ -3,7 +3,7 @@
 ## Project Overview
 This project is a **Backend E-commerce Product API** built with **Django** and **Django REST Framework (DRF)**.  
 The API serves as the backend for managing products on an e-commerce platform, allowing authenticated users to **create, update, delete, and view products**.  
-It simulates real-world backend development responsibilities, focusing on **product management, user authentication, and product search functionality**.
+It simulates real-world backend development responsibilities, focusing on **product management, user authentication, product reviews, and product search functionality**.
 
 ---
 
@@ -22,18 +22,19 @@ It simulates real-world backend development responsibilities, focusing on **prod
 - Validation for required fields: **Name, Price, Stock Quantity**.
 - (Optional/Future) Stock Quantity automatically decreases when an order is placed.
 
-### User Management (CRUD)
-- Manage users who can manage products.
+### User Management (CRUD & Auth)
+- Register and authenticate users.
 - User attributes:
   - Unique Username
   - Email
   - Password
-- Only authenticated users can manage products.
+- Only authenticated users can manage products and reviews.
 
-### Product Search
+### Product Search & Filtering
 - Search products by **Name** or **Category**.
 - Supports **partial matches** for flexible search results.
 - Includes **pagination** for handling large datasets.
+- Filter products by category, price range, and stock availability.
 
 ### Product View
 - Retrieve a list of products or individual product details by **Product ID**.
@@ -43,26 +44,40 @@ It simulates real-world backend development responsibilities, focusing on **prod
   - Stock Availability
 - Product details include all relevant information: Name, Description, Price, Category, Stock Quantity, Image URL.
 
+### Categories
+- Create, list, update, and delete categories.
+- Products are associated with categories (e.g., Electronics, Clothing).
+
+### Reviews
+- Add and view reviews for products.
+- Review attributes:
+  - Rating
+  - Comment
+  - User
+  - Created Date
+
 ---
 
 ## Technical Specifications
 
-### Database
 - Uses **Django ORM** to interact with the database.
 - Models defined for:
   - **Products**
-  - **Users**
-- Products are associated with categories (e.g., Electronics, Clothing).
-
-# E-commerce Product API Endpoints
-
-This API is built using Django and Django REST Framework. It supports product and user management, authentication, search, filtering, and documentation.
+  - **Categories**
+  - **Reviews**
+  - **Users** (Django built-in)
+- JWT authentication via **djangorestframework-simplejwt**.
 
 ---
 
-##  Authentication
+## API Endpoints
 
-- `POST /api/token/`  
+### Authentication
+
+- `POST /api/register/`  
+  Register a new user.
+
+- `POST /api/login/`  
   Obtain JWT access and refresh tokens.
 
 - `POST /api/token/refresh/`  
@@ -70,7 +85,7 @@ This API is built using Django and Django REST Framework. It supports product an
 
 ---
 
-## Users
+### Users
 
 - `GET /api/users/`  
   List all users.
@@ -89,7 +104,7 @@ This API is built using Django and Django REST Framework. It supports product an
 
 ---
 
-##  Products (`mystore` app)
+### Products (`mystore` app)
 
 - `GET /api/products/`  
   List all products (supports pagination, search, and filtering).
@@ -108,17 +123,17 @@ This API is built using Django and Django REST Framework. It supports product an
 
 ---
 
-##  Search & Filtering
+### Reviews
 
-- `GET /api/products/?search=keyword`  
-  Search products by name or category (partial matches supported).
+- `GET /api/reviews/?product=<product_id>`  
+  List all reviews for a specific product.
 
-- `GET /api/products/?category=1&min_price=50&max_price=200&in_stock=true`  
-  Filter products by category, price range, and stock availability.
+- `POST /api/reviews/`  
+  Add a new review to a product (requires authentication).
 
 ---
 
-##  Categories
+### Categories
 
 - `GET /api/categories/`  
   List all categories.
@@ -137,18 +152,32 @@ This API is built using Django and Django REST Framework. It supports product an
 
 ---
 
+### Search & Filtering
+
+- `GET /api/products/?search=keyword`  
+  Search products by name or category (partial matches supported).
+
+- `GET /api/products/?category=1&min_price=50&max_price=200&in_stock=true`  
+  Filter products by category, price range, and stock availability.
+
+---
+
 ### Pagination & Filtering
 - Pagination added to product listings and search results.
 - Filtering options include:
   - Category
   - Price Range
   - Stock Availability
+
+---
+
 ## Getting Started
 
 ### Prerequisites
 - Python 3.10+
-- Django 4.x
+- Django 4.x or 5.x
 - Django REST Framework
+- djangorestframework-simplejwt
 - PostgreSQL or SQLite (for development)
 - Git
 
@@ -157,3 +186,30 @@ This API is built using Django and Django REST Framework. It supports product an
    ```bash
    git clone <repository-url>
    cd ecommerce-product-api
+   ```
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Make migrations and migrate:
+   ```bash
+   python manage.py makemigrations
+   python manage.py migrate
+   ```
+4. Run the development server:
+   ```bash
+   python manage.py runserver
+   ```
+
+---
+
+## Usage
+
+- Use the provided endpoints to register, login, and manage products, categories, and reviews.
+- Authenticate using JWT tokens for protected endpoints.
+
+---
+
+## License
+
+MIT License
