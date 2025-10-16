@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Product, Category
-from .serializers import ProductSerializer, CategorySerializer
+from .models import Product, Category, Review
+from .serializers import ProductSerializer, CategorySerializer, ReviewSerializer
 from .filters import ProductFilter
 
 
@@ -62,3 +62,29 @@ class CategoryViewSet(viewsets.ModelViewSet):
     """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    """
+    Handles listing and creating reviews for products.
+    Only authenticated users can create reviews.
+    """
+    serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        """
+        Optionally filter reviews by product ID from the URL.
+        """
+        product_id = self.kwargs.get('product_pk') or self.request.query_params.get('product')
+        queryset = Review.objects.all()
+        if product_id:
+            queryset = queryset.filter(product_id=product_id)
+        return queryset.order_by('-created_at')
+
+    def perform_create(self, serializer):
+        """
+        Associate the review with the authenticated user and product.
+        """
+        product_id = self.kwargs.get('product_pk') or self.request.data.get('product')
+        serializer.save(user=self.request.user, product_id=product_id)

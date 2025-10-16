@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
-from .models import Product, Category
+from .models import Product, Category, Review
 
 class ProductViewTest(APITestCase):
     def setUp(self):
@@ -45,3 +45,27 @@ class ProductViewTest(APITestCase):
         }
         response = self.client.post("/api/products/", data)
         self.assertEqual(response.status_code, 401)
+
+class ReviewViewTest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="reviewer", password="reviewpass")
+        self.category = Category.objects.create(name="Electronics")
+        self.product = Product.objects.create(
+            name="Phone", description="Smartphone", price=299.99,
+            category=self.category, stock_quantity=10, image_url="http://example.com/phone.jpg"
+        )
+        token_response = self.client.post("/api/token/", {
+            "username": "reviewer",
+            "password": "reviewpass"
+        })
+        self.token = token_response.data["access"]
+
+    def test_create_review_authenticated(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.token}")
+        data = {
+            "product": self.product.id,
+            "rating": 5,
+            "comment": "Great phone!"
+        }
+        response = self.client.post("/api/reviews/", data)
+        self.assertEqual(response.status_code, 201)
