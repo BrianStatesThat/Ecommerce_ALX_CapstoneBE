@@ -6,6 +6,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Product, Category, Review
 from .serializers import ProductSerializer, CategorySerializer, ReviewSerializer
 from .filters import ProductFilter
+from rest_framework.filters import OrderingFilter
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -17,9 +18,12 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all().order_by('-created_date')
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    filter_backends = [ filters.SearchFilter, DjangoFilterBackend, OrderingFilter ]
+    ordering_fields = ['price', 'created_at', 'name']
+    ordering = ['-created_date'] 
     search_fields = ['name', 'category__name']
     filterset_class = ProductFilter
+
 
     def get_permissions(self):
         """
